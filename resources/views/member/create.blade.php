@@ -145,7 +145,7 @@ getLoanData($loan_data);
     <div class="col-md-6">
       <div class="input-group input-group-outline my-3">
         <label class="m-0 mx-2 d-flex" style="align-items: center;">Loan Sanction date</label>
-        <input type="date" name="sanction_date" class="form-control" autocomplete="off" required>
+        <input type="date" name="sanction_date" id="sanction_date" class="form-control" autocomplete="off" required>
       </div>
     </div>
     <div class="col-md-6">
@@ -328,14 +328,36 @@ getLoanData($loan_data);
   let interest_type_values = '';
   let interest_type = '';
   let loan_type = '';
+
   document.querySelector('#loan_name').onchange = function() {
     interest_type_values = this.selectedOptions[0].getAttribute('data-value');
     interest_type = this.selectedOptions[0].getAttribute('data-type');
     document.getElementById('installment_type').value = this.selectedOptions[0].getAttribute('data-type');
   };
+
   document.querySelector('#loan_type').onchange = function() {
     loan_type = this.selectedOptions[0].value;
   };
+
+  $(document).ready(function() {
+    let now = new Date();
+    let day = ("0" + now.getDate()).slice(-2);
+    let month = ("0" + (now.getMonth() + 1)).slice(-2);
+    let today = now.getFullYear()+ "-" + (month) + "-" + (day);
+    console.log(today);
+    $("#start_date_of_installment, #sanction_date").val(today)
+    // document.getElementById("start_date_of_installment").value = today;
+  });
+
+  $("#installment_amount, #number_of_installment, #principle, #interest_amount").on('keyup change', function() {
+    if (loan_type == 'flat_interest') {
+      var int_amo = $("#installment_amount").val();
+      var no_int = $("#number_of_installment").val();
+      var pri = $("#principle").val();
+      $("#interest_amount").val(int_amo * no_int - pri);
+      $("#interest").val(($("#interest_amount").val() * 100) / pri);
+    }
+  });
 
   function setInterest() {
     var i = document.getElementById('interest').value;
@@ -343,20 +365,21 @@ getLoanData($loan_data);
     var ni = document.getElementById('number_of_installment').value;
     // console.log(loan_type);
     if (loan_type == 'flat_interest') {
-      document.getElementById('interest_amount').value = Math.round(i * p * ni / (100 * interest_type_values));
       setInstallment();
     } else if (loan_type == 'reducing_interest') {
       var R = i / (interest_type_values * 100);
       var example = Math.round((p * R * (Math.pow((1 + R), ni))) / (Math.pow((1 + R), ni) - 1));
-      document.getElementById('interest_amount').value = example*ni - p;
-      document.getElementById('installment_amount').value = example;
+      $("#interest_amount").val(example * ni - p);
+      $("#installment_amount").val(example);
+      // document.getElementById('interest_amount').value = example * ni - p;
+      // document.getElementById('installment_amount').value = example;
     }
   }
 
 
   function setInstallment() {
     var p = parseInt(document.getElementById('principle').value);
-    var ia = parseInt(document.getElementById('interest_amount').value);
+    var ia = (p / 100) * parseInt(document.getElementById('interest').value);
     var ni = parseInt(document.getElementById('number_of_installment').value);
     interest_type_values = '1';
     var emi = Math.round((p + ia) / (ni * parseInt(interest_type_values)));
@@ -365,7 +388,6 @@ getLoanData($loan_data);
   $('#loan_name').find(':selected').data('value', function() {
     console.log(value);
   });
-
 
 
   function setExtraCharge() {
@@ -394,7 +416,6 @@ getLoanData($loan_data);
     $.each(all_input, function(indexInArray, valueOfElement) {
       $("." + $(valueOfElement).attr("name")).html($(valueOfElement).val());
     });
-
   }
 </script>
 @endsection
