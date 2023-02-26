@@ -46,15 +46,29 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $loan_data = $request->only('start_date_of_installment','end_date_of_installment','interest_per_unit_value','principle','installment_amount','number_of_installment');
+        dd($loan_data);
+        $array = [
+            ['number_of_emi'=>'1', 'staff_id'=>'xyz', 'member_id'=>'abc', 'emi'=>'41725', 'principle'=>'12345', 'interest'=>'3213', 'outstanding'=>'234566543', 'duration'=>'30 days'],
+            ['number_of_emi'=>'1', 'staff_id'=>'xyz', 'member_id'=>'abc', 'emi'=>'41725', 'principle'=>'12345', 'interest'=>'3213', 'outstanding'=>'234566543', 'duration'=>'30 days'],
+            ['number_of_emi'=>'1', 'staff_id'=>'xyz', 'member_id'=>'abc', 'emi'=>'41725', 'principle'=>'12345', 'interest'=>'3213', 'outstanding'=>'234566543', 'duration'=>'30 days'],
+            ['number_of_emi'=>'1', 'staff_id'=>'xyz', 'member_id'=>'abc', 'emi'=>'41725', 'principle'=>'12345', 'interest'=>'3213', 'outstanding'=>'234566543', 'duration'=>'30 days'],
+            ['number_of_emi'=>'1', 'staff_id'=>'xyz', 'member_id'=>'abc', 'emi'=>'41725', 'principle'=>'12345', 'interest'=>'3213', 'outstanding'=>'234566543', 'duration'=>'30 days'],
+            ['number_of_emi'=>'1', 'staff_id'=>'xyz', 'member_id'=>'abc', 'emi'=>'41725', 'principle'=>'12345', 'interest'=>'3213', 'outstanding'=>'234566543', 'duration'=>'30 days']
+        ];
+
+        $arr = [];
+
+        $arr[] = [];
         $input = $request->all();
         unset($input['_token']);
+        unset($input['interest_per_unit_value']);
+        dd($input);
         if ($request->has('password')) {
             $input['password'] = Hash::make($input['password']);
         }
 
         $user = User::create($input);
-        
-
         return redirect()->back()->with('message', 'Member created successfully');
     }
 

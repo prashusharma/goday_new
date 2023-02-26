@@ -114,6 +114,7 @@ getLoanData($loan_data);
     <input type="hidden" name="group_id" value="{{ $id }}">
     <input type="hidden" name="password" value="12345">
     <input type="hidden" name="company_id" value="{{ auth()->user()->id }}">
+    <input type="hidden" name="interest_per_unit_value" id="interest_per_unit_value">
     <div class="col-md-6">
       <div class="input-group input-group-outline my-3">
         <label class="form-label">A/C Holder's Name</label>
@@ -344,7 +345,6 @@ getLoanData($loan_data);
     let day = ("0" + now.getDate()).slice(-2);
     let month = ("0" + (now.getMonth() + 1)).slice(-2);
     let today = now.getFullYear()+ "-" + (month) + "-" + (day);
-    console.log(today);
     $("#start_date_of_installment, #sanction_date").val(today)
     // document.getElementById("start_date_of_installment").value = today;
   });
@@ -354,8 +354,10 @@ getLoanData($loan_data);
       var int_amo = $("#installment_amount").val();
       var no_int = $("#number_of_installment").val();
       var pri = $("#principle").val();
-      $("#interest_amount").val(int_amo * no_int - pri);
-      $("#interest").val(($("#interest_amount").val() * 100) / pri);
+      if($("#installment_amount").val() != '' && $("#number_of_installment").val() != ''){
+        $("#interest_amount").val(int_amo * no_int - pri);
+        $("#interest").val(($("#interest_amount").val() * 100) / pri);
+      }
     }
   });
 
@@ -368,11 +370,10 @@ getLoanData($loan_data);
       setInstallment();
     } else if (loan_type == 'reducing_interest') {
       var R = i / (interest_type_values * 100);
+      $('#interest_per_unit_value').val(R);
       var example = Math.round((p * R * (Math.pow((1 + R), ni))) / (Math.pow((1 + R), ni) - 1));
       $("#interest_amount").val(example * ni - p);
       $("#installment_amount").val(example);
-      // document.getElementById('interest_amount').value = example * ni - p;
-      // document.getElementById('installment_amount').value = example;
     }
   }
 
